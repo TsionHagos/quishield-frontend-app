@@ -1,7 +1,5 @@
 'use client';
-
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 const API_BASE = 'https://clever-grace-production-a283.up.railway.app';
 
@@ -19,28 +17,30 @@ const getUserIdFromToken = () => {
 export default function MicrosoftLogin() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
-
     const userId = getUserIdFromToken();
 
-    await fetch(`${API_BASE}/simulation/event`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        user_id: userId ? parseInt(userId) : null,
-        scenario_id: 1,
-        qr_id: null,
-        visited_page: true,
-        entered_credentials: true,
-        submitted_data: true,
-      }),
-    });
-
-    router.push('/caught');
+    try {
+      await fetch(`${API_BASE}/simulation/event`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userId ? parseInt(userId) : null,
+          scenario_id: 1,
+          qr_id: null,
+          visited_page: true,
+          entered_credentials: true,
+          submitted_data: true
+        })
+      });
+    } catch (err) {
+      console.error('Failed to log event', err);
+    } finally {
+      window.location.href = '/caught';
+    }
   };
 
   return (
@@ -51,39 +51,35 @@ export default function MicrosoftLogin() {
             <span className="text-[38px] font-semibold tracking-[-2.2px]">Microsoft</span>
           </div>
         </div>
-
         <div>
           <h1 className="text-2xl font-semibold tracking-tight mb-1">Sign in</h1>
           <p className="text-sm text-[#605e5c]">Use your Microsoft account</p>
         </div>
-
         <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-          <input 
-            type="email" 
+          <input
+            type="email"
             placeholder="Email, phone or Skype"
-            className="w-full border-b border-[#605e5c] py-3 text-lg focus:outline-none text-[#1b1b1b]" 
+            className="w-full border-b border-[#605e5c] py-3 text-lg focus:outline-none text-[#1b1b1b]"
             value={form.email}
-            onChange={(e)=>setForm({...form, email:e.target.value})} 
-            required 
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            required
           />
-          <input 
-            type="password" 
+          <input
+            type="password"
             placeholder="Password"
-            className="w-full border-b border-[#605e5c] py-3 text-lg focus:outline-none text-[#1b1b1b]" 
-            value={form.password} 
-            onChange={(e)=>setForm({...form, password:e.target.value})} 
-            required 
+            className="w-full border-b border-[#605e5c] py-3 text-lg focus:outline-none text-[#1b1b1b]"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            required
           />
-
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
             className="mt-4 w-full bg-[#0067b8] hover:bg-[#005da8] text-white py-[13px] text-[15px] font-semibold tracking-[0.5px]"
           >
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
-
         <div className="mt-7 text-xs text-[#605e5c]">This is an educational simulation only. No credentials are stored.</div>
       </div>
     </div>
