@@ -1,0 +1,7 @@
+.next
+.env.local
+.mcp.json
+.claude/settings.local.json
+node_modules/*
+next-env.d.ts
+.DS_Store
